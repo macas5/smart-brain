@@ -7,34 +7,35 @@ import Rank from './components/Rank/Rank';
 import Register from './components/Register/Register';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import SignIn from './components/SignIn/SignIn';
+import srvFetch from './components/srvFetch/srvFetch'
 import './App.css';
 
 
 const particlesOptions = {
-    particles: {
-      number: {
-        value: 100,
-        density: {
-          enable: true,
-          value_area: 800
-        }
+  particles: {
+    number: {
+      value: 100,
+      density: {
+        enable: true,
+        value_area: 800
       }
     }
+  }
 }
 
 const initialState = {
-    input: '',
-    imageUrl: '',
-    box: {},
-    route: 'signin',
-    isSignedIn: false,
-    user: {
-      id: '',
-      name: '',
-      email: '',
-      entries: 0,
-      joined: ''
-    }
+  input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
 }
 
 class App extends React.Component {
@@ -67,7 +68,6 @@ class App extends React.Component {
   }
 
   displayFaceBox = (box) => {
-
     this.setState({box: box});
   }
 
@@ -77,47 +77,31 @@ class App extends React.Component {
 
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input})
-    fetch('https://agile-hollows-89259.herokuapp.com/imageurl', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        input: this.state.input
-      })
+    srvFetch('imageurl', 'post', {input: this.state.input})
+    .then(response => {
+      if (response) {
+        srvFetch('image', 'put', {id: this.state.user.id})
+        .then(count => {
+          this.setState(Object.assign(this.state.user, { entries: count}))
+        })
+        .catch(console.log)
+      }
+      this.displayFaceBox(this.calculateFaceLocation(response))
     })
-      .then(response => response.json())
-      .then(response => {
-        if (response) {
-          fetch('https://agile-hollows-89259.herokuapp.com/image', {
-            method: 'put',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-              id: this.state.user.id
-            })
-          })
-            .then(response => response.json())
-            .then(count => {
-              this.setState(Object.assign(this.state.user, { entries: count}))
-            })
-            .catch(console.log)
-        }
-        this.displayFaceBox(this.calculateFaceLocation(response))
-      })
-      .catch(err => console.log(err));
+    .catch(err => console.log(err));
   }
 
   onRouteChange = (route) =>{
-    
     if (route === 'signout'){
       this.setState({route: 'signin'});
       this.setState(initialState);
-      return;
-    } 
-    if (route === 'home') {
-      this.setState({isSignedIn: true});
+    } else {
+      if (route === 'home') {
+        this.setState({isSignedIn: true});
+      }
+      this.setState({route: route});
     }
-    this.setState({route: route});
   }
-  
 
   render(){
     const {isSignedIn, imageUrl, route, box} = this.state;
@@ -126,19 +110,19 @@ class App extends React.Component {
         <Particles className='particles' params={particlesOptions} />
         <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
         {route === 'home'
-          ?<div>
+        ?
+          <div>
             <Logo />
             <Rank name={this.state.user.name} entries={this.state.user.entries} />
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
             <FaceRecognition box={box} imageUrl={imageUrl}/>
           </div>
-          :
-            route === "signin"?
-              <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+        :
+          route === "signin"?
+            <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
           :
             <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
         }
-        
       </div>
     );
   }
