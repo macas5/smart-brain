@@ -1,5 +1,7 @@
 import React from 'react';
 import srvFetch from '../srvFetch/srvFetch';
+import passwordStrength from 'check-password-strength';
+import isValid from '../validator/validator'
 
 class Register extends React.Component {
   constructor(props) {
@@ -7,7 +9,9 @@ class Register extends React.Component {
     this.state = {
       email: '',
       password: '',
-      name: ''
+      name: '',
+      pswStrength: 'Weak',
+      errorMsg: ''
     }
   }
 
@@ -20,27 +24,49 @@ class Register extends React.Component {
   }
 
   onPasswordChange = (event) => {
-    this.setState({password: event.target.value});
+    if (event.target.value){
+      this.setState({password: event.target.value, 
+        pswStrength: passwordStrength(event.target.value).value});
+      console.log(this.state.pswStrength);
+    }
   }
 
   onSubmitSignIn = () => {
-    srvFetch('register', 'post', {
-      name: this.state.name, email: this.state.email, password: this.state.password})
-    .then(user => {
-      if (user) {
-        this.props.loadUser(user);
-        this.props.onRouteChange('home');
+    const { name, email, password } = this.state;
+    const validation = isValid (email, password, name, true);
+    if (validation > 0) {
+      srvFetch('register', 'post', {
+        name: name, email: email, password: password})
+      .then(user => {
+        if (user) {
+          this.props.loadUser(user);
+          this.props.onRouteChange('home');
+        }
+      })
+    } else {
+      switch (validation) {
+        case -1:
+          this.setState({errorMsg: 'You must enter correct email format'});
+          break;
+        case -2:
+          this.setState({errorMsg: 'You must enter correct password format'});
+          break;
+        case -3:
+          this.setState({errorMsg: 'You must enter correct name format'});
+          break;
+        default:
+          this.setState({errorMsg: 'Unexpected error'});
       }
-    })
+    }
   }
 
 
   render(){
     return(
-      <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
+      <article className="br3 ba b--black-10 mv4 w-140 w-50-m w-25-l mw6 shadow-5 center">
         <main className="pa4 black-80">
           <div className="measure">
-            <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
+            <fieldset id="sign_up" className="ba w5 b--transparent ph0 mh0 center">
               <legend className="f1 fw6 ph0 mh0">Register</legend>
               <div className="mt3">
                 <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
@@ -58,7 +84,12 @@ class Register extends React.Component {
                 <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
                 <input onChange={this.onPasswordChange} 
                 className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
-                type="password" name="password"  id="password" />
+                type="password" name="password"  id="password" 
+                title="Password must contain at least 6 characters of which at least 
+                1 must be a number" />
+              </div>
+              <div>
+                <p>Password strength: {this.state.pswStrength}</p>
               </div>
             </fieldset>
             <div className="">
@@ -67,6 +98,9 @@ class Register extends React.Component {
               type="submit" value="Register" />
             </div>
             <div className="lh-copy mt3" />
+            <div className="red">
+              {this.state.errorMsg}
+            </div>
           </div>
         </main>
       </article>
