@@ -27,11 +27,10 @@ class Register extends React.Component {
     if (event.target.value){
       this.setState({password: event.target.value, 
         pswStrength: passwordStrength(event.target.value).value});
-      console.log(this.state.pswStrength);
     }
   }
 
-  onSubmitSignIn = () => {
+  onSubmitRegister = () => {
     const { name, email, password } = this.state;
     const validation = isValid (email, password, name, true);
     if (validation > 0) {
@@ -39,6 +38,7 @@ class Register extends React.Component {
         name: name, email: email, password: password})
       .then(user => {
         if (user) {
+          this.setState({errorMsg: ''});
           this.props.loadUser(user);
           this.props.onRouteChange('home');
         }
@@ -60,6 +60,9 @@ class Register extends React.Component {
     }
   }
 
+  onEnterPress = (event) => {
+    if (event.key === 'Enter') this.onSubmitRegister();
+  }
 
   render(){
     return(
@@ -70,19 +73,19 @@ class Register extends React.Component {
               <legend className="f1 fw6 ph0 mh0">Register</legend>
               <div className="mt3">
                 <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
-                <input onChange={this.onNameChange} 
+                <input onKeyPress={this.onEnterPress} onChange={this.onNameChange} 
                 className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
                 type="text" name="name"  id="name" />
               </div>
               <div className="mt3">
                 <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
-                <input onChange={this.onEmailChange} 
+                <input onKeyPress={this.onEnterPress} onChange={this.onEmailChange} 
                 className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
                 type="email" name="email-address"  id="email-address" />
               </div>
               <div className="mv3">
                 <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
-                <input onChange={this.onPasswordChange} 
+                <input onKeyPress={this.onEnterPress} onChange={this.onPasswordChange} 
                 className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
                 type="password" name="password"  id="password" 
                 title="Password must contain at least 6 characters of which at least 
@@ -93,14 +96,12 @@ class Register extends React.Component {
               </div>
             </fieldset>
             <div className="">
-              <input onClick={this.onSubmitSignIn} 
+              <input onClick={this.onSubmitRegister} 
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" 
               type="submit" value="Register" />
             </div>
             <div className="lh-copy mt3" />
-            <div className="red">
-              {this.state.errorMsg}
-            </div>
+            <div><p className="mb0 red">{this.state.errorMsg}</p></div>
           </div>
         </main>
       </article>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Particles from 'react-particles-js';
+import Validator from 'validator';
 import Navigation from './components/Navigation/Navigation';
 import Logo from './components/Logo/Logo';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
@@ -26,9 +27,10 @@ const particlesOptions = {
 const initialState = {
   input: '',
   imageUrl: '',
-  box: {},
+  box: [{}],
   route: 'signin',
   isSignedIn: false,
+  errorMsg: '',
   user: {
     id: '',
     name: '',
@@ -55,16 +57,21 @@ class App extends React.Component {
   }
 
   calculateFaceLocation =(data) => {
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+    // console.log(data.outputs);
+    // const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height)
-    }
+    const clarifaiFace = data.outputs[0].data.regions.map( face => {
+      const box = face.region_info.bounding_box;
+      return {
+        leftCol: box.left_col * width,
+        topRow: box.top_row * height,
+        rightCol: width - (box.right_col * width),
+        bottomRow: height - (box.bottom_row * height)
+      }
+    })
+    return clarifaiFace
   }
 
   displayFaceBox = (box) => {
@@ -77,18 +84,27 @@ class App extends React.Component {
 
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input})
-    srvFetch('imageurl', 'post', {input: this.state.input})
-    .then(response => {
-      if (response) {
-        srvFetch('image', 'put', {id: this.state.user.id})
-        .then(count => {
-          this.setState(Object.assign(this.state.user, { entries: count}))
-        })
-        .catch(console.log)
-      }
-      this.displayFaceBox(this.calculateFaceLocation(response))
-    })
-    .catch(err => console.log(err));
+    if (Validator.isURL(this.state.input)){
+      this.setState({errorMsg: ''});
+      srvFetch('imageurl', 'post', {input: this.state.input})
+      .then(response => {
+        if (response) {
+          srvFetch('image', 'put', {id: this.state.user.id})
+          .then(count => {
+            this.setState(Object.assign(this.state.user, { entries: count}))
+          })
+          .catch(console.log)
+        }
+        this.displayFaceBox(this.calculateFaceLocation(response))
+      })
+      .catch(err => console.log(err));
+    } else {
+      this.setState({errorMsg: 'Please put in correct photo URL'});
+    }
+  }
+
+  onEnterPress = (event) => {
+    if (event.key === 'Enter') this.onButtonSubmit();
   }
 
   onRouteChange = (route) =>{
@@ -114,8 +130,8 @@ class App extends React.Component {
           <div>
             <Logo />
             <Rank name={this.state.user.name} entries={this.state.user.entries} />
-            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
-            <FaceRecognition box={box} imageUrl={imageUrl}/>
+            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} onEnterPress={this.onEnterPress}/>
+            <FaceRecognition box={box} imageUrl={imageUrl} errorMsg={this.state.errorMsg}/>
           </div>
         :
           route === "signin"?
