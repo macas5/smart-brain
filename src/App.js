@@ -4,7 +4,7 @@ import Validator from 'validator';
 import Navigation from './components/Navigation/Navigation';
 import Logo from './components/Logo/Logo';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
-import Rank from './components/Score/Score';
+import Score from './components/Score/Score';
 import Register from './components/Register/Register';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import SignIn from './components/SignIn/SignIn';
@@ -32,6 +32,7 @@ const initialState = {
   route: 'signin',
   isSignedIn: false,
   errorMsg: '',
+  rankingsList: [{}],
   user: {
     id: '',
     name: '',
@@ -114,12 +115,18 @@ class App extends React.Component {
       if (route === 'home') {
         this.setState({isSignedIn: true});
       }
+      this.updateRankingsList();
       this.setState({route: route});
     }
   }
 
+  updateRankingsList = () => srvFetch('rankings', 'GET')
+  .then(response => {
+    this.setState({rankingsList: response.map(x => x)}) ;
+  })
+
   render(){
-    const {isSignedIn, imageUrl, route, box} = this.state;
+    const {isSignedIn, imageUrl, route, box, rankingsList, user, errorMsg} = this.state;
     return (
       <div className="App">
         <Particles className='particles' params={particlesOptions} />
@@ -128,9 +135,9 @@ class App extends React.Component {
         ?
           <div>
             <Logo />
-            <Rank name={this.state.user.name} entries={this.state.user.entries} />
+            <Score name={user.name} entries={user.entries} />
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} onEnterPress={this.onEnterPress}/>
-            <FaceRecognition box={box} imageUrl={imageUrl} errorMsg={this.state.errorMsg}/>
+            <FaceRecognition box={box} imageUrl={imageUrl} errorMsg={errorMsg}/>
           </div>
         :
           route === "signin"?
@@ -139,7 +146,7 @@ class App extends React.Component {
             route === "register"?
               <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
             :
-              <Rankings />  
+              <Rankings rankingsList={rankingsList}/>  
         }
       </div>
     );
