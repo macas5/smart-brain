@@ -4,10 +4,11 @@ import Validator from 'validator';
 import Navigation from './components/Navigation/Navigation';
 import Logo from './components/Logo/Logo';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
-import Rank from './components/Rank/Rank';
+import Rank from './components/Score/Score';
 import Register from './components/Register/Register';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import SignIn from './components/SignIn/SignIn';
+import Rankings from './components/Rankings/Rankings'
 import srvFetch from './components/srvFetch/srvFetch'
 import './App.css';
 
@@ -57,8 +58,6 @@ class App extends React.Component {
   }
 
   calculateFaceLocation =(data) => {
-    // console.log(data.outputs);
-    // const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
@@ -137,7 +136,10 @@ class App extends React.Component {
           route === "signin"?
             <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
           :
-            <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
+            route === "register"?
+              <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
+            :
+              <Rankings />  
         }
       </div>
     );

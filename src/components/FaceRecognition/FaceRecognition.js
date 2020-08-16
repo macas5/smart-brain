@@ -6,7 +6,7 @@ const FaceRecognition = ({imageUrl, box, errorMsg}) => {
     const boundingBox = box.map((element, index) => <div key={index} className='bounding-box' 
     style={{top: element.topRow, right: element.rightCol, bottom: element.bottomRow, left: element.leftCol}}/>)
     return(
-      <div className='center ma'>
+      <div className='flex justify-center ma'>
         <div className='absolute mt2'>
           <img id='inputimage' src={imageUrl} alt ='' width='500px' height='auto'/>
           {boundingBox}
