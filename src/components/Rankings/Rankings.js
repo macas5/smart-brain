@@ -6,12 +6,14 @@ import './Rankings.css'
       return (
         (entry.entries > 0) ?
           <li key={'li'+entry.id} className="ph3 tl pv2 bb flex b--light-silver">
-          <span key={'spanl'+entry.id} className='mr-auto'>{index + 1}. {entry.name}</span> 
+          <span key={'spanl'+entry.id} className='w2'>{index + 1}. </span>
+          <span key= {'spanm'+entry.id} className='mr-auto'>{entry.name}</span> 
           <span key={'spanr'+entry.id}>{entry.entries}</span></li>
         :
           <li key={'li'+entry.id} className="ph3 tl pv2 bb flex b--light-silver">
-          <span key={'spanl'+entry.id} className='mr-auto'>{index + 1}. aaa</span> 
-          <span key={'spanr'+entry.id}></span>0</li>
+          <span key={'spanl'+entry.id} className='w2'>{index + 1}. </span>
+          <span key={'spanm'+entry.id} className='mr-auto'></span> 
+          <span key={'spanr'+entry.id}></span></li>
       );
   })
 
