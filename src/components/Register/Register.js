@@ -40,7 +40,7 @@ class Register extends React.Component {
         if (user) {
           this.setState({errorMsg: ''});
           this.props.loadUser(user);
-          this.props.onRouteChange('home');
+          this.props.onRouteChange('signedin');
         }
       })
     } else {
