@@ -125,29 +125,48 @@ class App extends React.Component {
     this.setState({rankingsList: response.map(x => x)}) ;
   })
 
+  
+
   render(){
-    const {isSignedIn, imageUrl, route, box, rankingsList, user, errorMsg} = this.state;
+    const {isSignedIn} = this.state;
+
+    const routeSelection = () => {
+      const {imageUrl, route, box, rankingsList, user, errorMsg} = this.state;
+      switch (route){
+        case 'signin':
+          return (
+          <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+          )
+  
+        case 'home':
+          return (
+            <div>
+              <Score name={user.name} entries={user.entries} />
+              <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} onEnterPress={this.onEnterPress}/>
+              <FaceRecognition box={box} imageUrl={imageUrl} errorMsg={errorMsg}/>
+            </div>
+          )
+        
+        case 'rankings':
+          return (
+            <Rankings rankingsList={rankingsList}/>
+          )
+  
+        case 'register':
+          return (
+            <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
+          )
+        default:
+          return <p>There were some problems getting route</p>
+      }
+    }
+
     return (
       <div className="App">
         <Particles className='particles' params={particlesOptions} />
         <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
-        {route === 'home'
-        ?
-          <div>
-            <Logo />
-            <Score name={user.name} entries={user.entries} />
-            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} onEnterPress={this.onEnterPress}/>
-            <FaceRecognition box={box} imageUrl={imageUrl} errorMsg={errorMsg}/>
-          </div>
-        :
-          route === "signin"?
-            <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
-          :
-            route === "register"?
-              <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
-            :
-              <Rankings rankingsList={rankingsList}/>  
-        }
+        <Logo />
+        {routeSelection()}
       </div>
     );
   }
