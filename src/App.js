@@ -38,7 +38,8 @@ const initialState = {
     name: '',
     email: '',
     entries: 0,
-    joined: ''
+    joined: '',
+    rank: 0
   }
 }
 
@@ -110,12 +111,20 @@ class App extends React.Component {
   onRouteChange = (route) =>{
     switch (route) {
       case 'home':
-        this.setState({isSignedIn: true});
         this.setState({route: route});
+        break;
+
+      case 'signedin':
+        this.setState({isSignedIn: true});
+        this.setState({route: 'home'});
         break;
         
       case 'rankings':
         this.updateRankingsList();
+        this.setState({route: route});
+        break;
+
+      case 'register':
         this.setState({route: route});
         break;
       
@@ -127,6 +136,15 @@ class App extends React.Component {
 
   updateRankingsList = () => srvFetch('rankings', 'GET')
   .then(response => {
+    let found = false;
+    let i = 0;
+    while (!found || i < response.length){
+      if (response[i].id === this.state.user.id){
+        Object.assign(this.state.user, {rank: i + 1});
+        found = true;
+      }
+      i++;
+    }
     this.setState({rankingsList: response.map(x => x)}) ;
   })
 
@@ -154,7 +172,7 @@ class App extends React.Component {
         
         case 'rankings':
           return (
-            <Rankings rankingsList={rankingsList}/>
+            <Rankings rankingsList={rankingsList} userRank={user.rank} userEntries={user.entries}/>
           )
   
         case 'register':
@@ -169,8 +187,10 @@ class App extends React.Component {
     return (
       <div className="App">
         <Particles className='particles' params={particlesOptions} />
-        <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
-        <Logo />
+        <div className='flex flex-wrap justify-end flex-row-reverse'>
+          <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
+          <Logo />
+        </div>
         {routeSelection()}
       </div>
     );
