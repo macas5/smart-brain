@@ -108,15 +108,20 @@ class App extends React.Component {
   }
 
   onRouteChange = (route) =>{
-    if (route === 'signout'){
-      this.setState({route: 'signin'});
-      this.setState(initialState);
-    } else {
-      if (route === 'home') {
+    switch (route) {
+      case 'home':
         this.setState({isSignedIn: true});
-      }
-      this.updateRankingsList();
-      this.setState({route: route});
+        this.setState({route: route});
+        break;
+        
+      case 'rankings':
+        this.updateRankingsList();
+        this.setState({route: route});
+        break;
+      
+      default:
+        this.setState({route: 'signin'});
+        this.setState(initialState);
     }
   }
 
