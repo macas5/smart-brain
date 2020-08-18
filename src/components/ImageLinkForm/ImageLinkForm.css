@@ -25,3 +25,7 @@
 .mw-30 {
     max-width: 30%;
 }
+
+.minwidth0{
+    min-width: 0;
+}

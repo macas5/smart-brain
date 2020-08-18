@@ -58,8 +58,8 @@ class SignIn extends React.Component {
       <article className="mv4 w-100 mw6-ns center">
         <main className="br3 ba b--black-10 shadow-5 mh5-ns pa4 black-80">
           <div className="measure">
-            <fieldset id="sign_up" className="ba w5 b--transparent ph0 mh0 center">
-              <legend className="f1 fw6 ph0 mh0">Sign In</legend>
+            <fieldset id="sign_up" className="ba mw5 b--transparent ph0 mh0 center">
+              <legend className="f2 f1-ns fw6 ph0 mh0">Sign In</legend>
               <div className="mt3">
                 <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
                 <input onKeyPress={this.onEnterPress} onChange={this.onEmailChange} 
