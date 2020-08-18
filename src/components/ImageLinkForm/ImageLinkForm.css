@@ -13,3 +13,15 @@
 .minw120 {
     min-width: 120px;
 }
+
+.fl-grow-7 {
+    flex-grow: 7;
+}
+
+.fl-grow-3 {
+    flex-grow: 3;
+}
+
+.mw-30 {
+    max-width: 30%;
+}
