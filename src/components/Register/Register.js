@@ -36,11 +36,16 @@ class Register extends React.Component {
     if (validation > 0) {
       srvFetch('register', 'post', {
         name: name, email: email, password: password})
-      .then(user => {
-        if (user) {
-          this.setState({errorMsg: ''});
-          this.props.loadUser(user);
-          this.props.onRouteChange('signedin');
+      .then(response => {
+        if (response === 'Email in use')
+        {
+          this.setState({errorMsg: 'Email is already in use'})
+        } else {
+          if (response) {
+            this.setState({errorMsg: ''});
+            this.props.loadUser(response);
+            this.props.onRouteChange('signedin');
+          }
         }
       })
     } else {
