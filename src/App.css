@@ -10,3 +10,11 @@
   left: 0;
   z-index: -1;
 }
+
+.fl-grow-99 {
+  flex-grow: 99;
+}
+
+.fl-grow-1 {
+  flex-grow: 1;
+}
