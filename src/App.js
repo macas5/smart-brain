@@ -49,15 +49,26 @@ class App extends React.Component {
     this.state = initialState;
   }
 
-  loadUser = (data) => {
-    this.setState({user: {
-      id: data.id,
-      name:data.name,
-      email: data.email,
-      entries: data.entries,
-      joined: data.joined
-    }})
-  }
+  loadUser = (data) => 
+    fetch(`${process.env.REACT_APP_BACK_END_LOCATION}/getuser`, {
+      method: 'get',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + data }
+    })
+    .then (response => response.json())
+    .then (data => {
+      if (data === "Invalid"){
+        return false;
+      } else {
+        this.setState({user: {
+          id: data.id,
+          name:data.name,
+          email: data.email,
+          entries: data.entries,
+          joined: data.joined
+        }, isSignedIn: true})
+      }
+      return true;
+    })
 
   calculateFaceLocation =(data) => {
     const image = document.getElementById('inputimage');
@@ -129,6 +140,7 @@ class App extends React.Component {
         break;
       
       default:
+        localStorage.removeItem('accessToken');
         this.setState({route: 'signin'});
         this.setState(initialState);
     }
@@ -158,7 +170,8 @@ class App extends React.Component {
       switch (route){
         case 'signin':
           return (
-          <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+          <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}
+           isSignedIn={this.isSignedIn} />
           )
   
         case 'home':

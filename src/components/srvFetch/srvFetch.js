@@ -5,7 +5,7 @@ const srvFetch = (target, method, body) => {
       ...(method !== 'GET' && {body: JSON.stringify({ ...body })})
     })
     .then(response => {
-      if (response.status === 400){
+      if ([400, 404, 409, 500].includes(response.status)){
         return false;
       } else {
         return response.json();

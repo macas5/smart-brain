@@ -26,9 +26,10 @@ class SignIn extends React.Component {
     if (validation > 0){
       srvFetch('signin', 'post', {email: signInEmail, 
         password: signInPassword})
-      .then(user => {
-        if(user){
-          this.props.loadUser(user);
+      .then(response => {
+        if(response){
+          localStorage.setItem('accessToken', response.accessToken);
+          this.props.loadUser(response.accessToken);
           this.props.onRouteChange('signedin');
         } else {
           this.setState({errorMsg: 'Incorrect username or password'});
@@ -52,40 +53,67 @@ class SignIn extends React.Component {
     if (event.key === 'Enter') this.onSubmitSignIn();
   }
 
+  componentDidMount(){
+    if (localStorage.getItem('accessToken') !== null){
+      this.props.loadUser(localStorage.getItem('accessToken'))
+      .then(response => {if (response) this.props.onRouteChange('signedin')})
+    }
+  }
+  
+
+
   render(){
     const { onRouteChange } = this.props;
-    return(
-      <article className="mv4 w-100 mw6-ns center">
-        <main className="br3 ba b--black-10 shadow-5 mh5-ns pa4 black-80">
-          <div className="measure">
-            <fieldset id="sign_up" className="ba mw5 b--transparent ph0 mh0 center">
-              <legend className="f2 f1-ns fw6 ph0 mh0">Sign In</legend>
-              <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
-                <input onKeyPress={this.onEnterPress} onChange={this.onEmailChange} 
-                className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
-                type="email" name="email-address"  id="email-address" />
-              </div>
-              <div className="mv3">
-                <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
-                <input onKeyPress={this.onEnterPress} onChange={this.onPasswordChange} 
-                className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
-                type="password" name="password"  id="password" />
-              </div>
-            </fieldset>
-            <div className="">
-              <input onClick={this.onSubmitSignIn} 
-              className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
-              type="submit" value="Sign in" />
+
+    const loginForm = 
+    <article className="mv4 w-100 mw6-ns center">
+      <main className="br3 ba b--black-10 shadow-5 mh5-ns pa4 black-80">
+        <div className="measure">
+          <fieldset id="sign_up" className="ba mw5 b--transparent ph0 mh0 center">
+            <legend className="f2 f1-ns fw6 ph0 mh0">Sign In</legend>
+            <div className="mt3">
+              <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
+              <input onKeyPress={this.onEnterPress} onChange={this.onEmailChange} 
+              className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
+              type="email" name="email-address"  id="email-address" />
             </div>
-            <div className="lh-copy mt3">
-              <p onClick={() => onRouteChange('register')} 
-              className="f6 link dim black db pointer">Register</p>
-              <div><p className="mb0 red">{this.state.errorMsg}</p></div>
+            <div className="mv3">
+              <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+              <input onKeyPress={this.onEnterPress} onChange={this.onPasswordChange} 
+              className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
+              type="password" name="password"  id="password" />
             </div>
+          </fieldset>
+          <div className="">
+            <input onClick={this.onSubmitSignIn} 
+            className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
+            type="submit" value="Sign in" />
           </div>
-        </main>
-      </article>
+          <div className="lh-copy mt3">
+            <p onClick={() => onRouteChange('register')} 
+            className="f6 link dim black db pointer">Register</p>
+            <div><p className="mb0 red">{this.state.errorMsg}</p></div>
+          </div>
+        </div>
+      </main>
+    </article>
+
+    const isLoggedIn = () => {
+      if (localStorage.getItem('accessToken') !== null){
+        this.props.loadUser(localStorage.getItem('accessToken'))
+        .then(response => {if (response) {
+          this.props.onRouteChange('signedin')
+          return <div></div>}
+          else {
+            return loginForm
+          }
+        })
+      }
+      return loginForm
+    }
+
+    return(
+      <div>{isLoggedIn()}</div>
     );
   }
 }

@@ -8,5 +8,6 @@ It has several features such as:
 
 - Face detection
 - Login/Register user accounts
+- JWT to keep users logged in
 - User rankings
 - Website responsiveness

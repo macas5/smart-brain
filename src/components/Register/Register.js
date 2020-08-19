@@ -43,7 +43,8 @@ class Register extends React.Component {
         } else {
           if (response) {
             this.setState({errorMsg: ''});
-            this.props.loadUser(response);
+            localStorage.setItem('refreshToken', response.refreshToken);
+            this.props.loadUser(response.accessToken);
             this.props.onRouteChange('signedin');
           }
         }
