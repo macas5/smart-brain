@@ -100,7 +100,7 @@ class App extends React.Component {
       this.setState({errorMsg: ''});
       srvFetch('imageurl', 'post', {input: this.state.input})
       .then(response => {
-        if (response) {
+        if (response > 0) {
           srvFetch('image', 'put', {id: this.state.user.id})
           .then(count => {
             this.setState(Object.assign(this.state.user, { entries: count}))

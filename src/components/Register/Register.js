@@ -37,8 +37,7 @@ class Register extends React.Component {
       srvFetch('register', 'post', {
         name: name, email: email, password: password})
       .then(response => {
-        if (response === 'Email in use')
-        {
+        if (response === -1){
           this.setState({errorMsg: 'Email is already in use'})
         } else {
           if (response) {
