@@ -168,17 +168,6 @@ class App extends React.Component {
     this.setState({rankingsList: response.map(x => x)}) ;
   })
 
-  // componentWillMount () {
-  //   if (localStorage.getItem('accessToken') !== null){
-  //     this.loadUser(localStorage.getItem('accessToken'))
-  //     .then(response => {
-  //       if (response) {
-  //         this.onRouteChange('signedin')
-  //       }
-  //     })
-  //   }
-  // }
-
   render(){
     const {isSignedIn} = this.state;
 

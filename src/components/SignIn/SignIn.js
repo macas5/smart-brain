@@ -53,6 +53,10 @@ class SignIn extends React.Component {
     if (event.key === 'Enter') this.onSubmitSignIn();
   }
 
+  componentDidMount = () => {
+    document.title = "Sign In - Smart Brain";
+  }
+
   render(){
     const { onRouteChange } = this.props;    
 
@@ -78,7 +82,7 @@ class SignIn extends React.Component {
           <div className="">
             <input onClick={this.onSubmitSignIn} 
             className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
-            type="submit" value="Sign in" />
+            type="submit" value="Sign In" />
           </div>
           <div className="lh-copy mt3">
             <p onClick={() => onRouteChange('register')} 

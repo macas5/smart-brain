@@ -69,6 +69,10 @@ class Register extends React.Component {
   onEnterPress = (event) => {
     if (event.key === 'Enter') this.onSubmitRegister();
   }
+  
+  componentDidMount = () => {
+    document.title = "Register - Smart Brain";
+  }
 
   render(){
     return(

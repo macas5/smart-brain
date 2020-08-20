@@ -17,6 +17,8 @@ import './Rankings.css'
       );
   })
 
+  document.title = "Rankings - Smart Brain";
+
   return (
     <div>
       <h1>

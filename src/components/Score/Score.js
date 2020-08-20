@@ -1,6 +1,8 @@
 import React from 'react';
 
 const Score = ({name, entries}) => {
+  document.title = "Smart Brain";
+
   return(
     <div>
       <div className='mh4 white f3'>
