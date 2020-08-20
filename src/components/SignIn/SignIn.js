@@ -27,7 +27,8 @@ class SignIn extends React.Component {
       srvFetch('signin', 'post', {email: signInEmail, 
         password: signInPassword})
       .then(response => {
-        if(response > 0){
+        console.log(response);
+        if(response && response !== -1){
           localStorage.setItem('accessToken', response.accessToken);
           this.props.loadUser(response.accessToken);
           this.props.onRouteChange('signedin');
