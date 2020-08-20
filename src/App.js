@@ -29,7 +29,7 @@ const initialState = {
   input: '',
   imageUrl: '',
   box: [{}],
-  route: 'signin',
+  route: 'loading',
   isSignedIn: false,
   errorMsg: '',
   rankingsList: [{}],
@@ -138,6 +138,14 @@ class App extends React.Component {
       case 'register':
         this.setState({route: route});
         break;
+
+      case 'loading':
+        this.setState({route: route});
+        break;
+
+      case 'signin':
+        this.setState({route: route});
+        break;
       
       default:
         localStorage.removeItem('accessToken');
@@ -160,7 +168,16 @@ class App extends React.Component {
     this.setState({rankingsList: response.map(x => x)}) ;
   })
 
-  
+  // componentWillMount () {
+  //   if (localStorage.getItem('accessToken') !== null){
+  //     this.loadUser(localStorage.getItem('accessToken'))
+  //     .then(response => {
+  //       if (response) {
+  //         this.onRouteChange('signedin')
+  //       }
+  //     })
+  //   }
+  // }
 
   render(){
     const {isSignedIn} = this.state;
@@ -192,21 +209,45 @@ class App extends React.Component {
           return (
             <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
           )
+
+        case 'loading':
+          return (
+            <div/>
+          )
         default:
           return <p>There were some problems getting route</p>
       }
     }
 
-    return (
-      <div className="App">
-        <Particles className='particles' params={particlesOptions} />
-        <div className='flex flex-wrap justify-end flex-row-reverse'>
-          <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
-          <Logo />
-        </div>
-        {routeSelection()}
+    
+    const app = (
+    <div className="App">
+      <Particles className='particles' params={particlesOptions} />
+      <div className='flex flex-wrap justify-end flex-row-reverse'>
+        {(this.state.route !== "loading") && 
+        <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>}
+        <Logo />
       </div>
-    );
+      {routeSelection()}
+    </div>
+    )
+
+    const init = () => {
+      if (this.state.route === 'loading'){
+        this.loadUser(localStorage.getItem('accessToken'))
+        .then(response => {
+          if (response) {
+            this.onRouteChange('signedin')
+            return app;
+          } else {
+            this.onRouteChange('signin')
+            return app; 
+          }
+        })
+      } 
+      return app;
+    }
+    return (init());
   }
 }
 

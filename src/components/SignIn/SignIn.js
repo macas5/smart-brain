@@ -53,20 +53,11 @@ class SignIn extends React.Component {
     if (event.key === 'Enter') this.onSubmitSignIn();
   }
 
-  componentDidMount(){
-    if (localStorage.getItem('accessToken') !== null){
-      this.props.loadUser(localStorage.getItem('accessToken'))
-      .then(response => {if (response) this.props.onRouteChange('signedin')})
-    }
-  }
-  
-
-
   render(){
-    const { onRouteChange } = this.props;
+    const { onRouteChange } = this.props;    
 
-    const loginForm = 
-    <article className="mv4 w-100 mw6-ns center">
+    return(
+      <article className="mv4 w-100 mw6-ns center">
       <main className="br3 ba b--black-10 shadow-5 mh5-ns pa4 black-80">
         <div className="measure">
           <fieldset id="sign_up" className="ba mw5 b--transparent ph0 mh0 center">
@@ -97,23 +88,6 @@ class SignIn extends React.Component {
         </div>
       </main>
     </article>
-
-    const isLoggedIn = () => {
-      if (localStorage.getItem('accessToken') !== null){
-        this.props.loadUser(localStorage.getItem('accessToken'))
-        .then(response => {if (response) {
-          this.props.onRouteChange('signedin')
-          return <div></div>}
-          else {
-            return loginForm
-          }
-        })
-      }
-      return loginForm
-    }
-
-    return(
-      <div>{isLoggedIn()}</div>
     );
   }
 }
