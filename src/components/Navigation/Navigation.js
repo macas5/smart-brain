@@ -3,7 +3,7 @@ import React from 'react';
 const Navigation = ({onRouteChange, isSignedIn}) => {
   if(isSignedIn) {
     return (
-      <div className='ml-auto fl-grow-99'>
+      <div className='fl-grow-99'>
         <nav className='flex justify-end flex-wrap'>
           <p onClick={() => onRouteChange('home')} 
           className='f3 link dim black underline pa3 pointer mb0'>Home</p>
@@ -16,7 +16,7 @@ const Navigation = ({onRouteChange, isSignedIn}) => {
     );
   } else {
     return (
-      <div className='ml-auto fl-grow-99'>
+      <div className='fl-grow-99'>
         <nav className='flex justify-end flex-wrap'>
           <p onClick={() => onRouteChange('signin')} 
           className='f3 link dim black underline pa3 pointer mb0'> Sign In</p>

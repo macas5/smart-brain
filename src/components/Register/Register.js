@@ -26,23 +26,24 @@ class Register extends React.Component {
   onPasswordChange = (event) => {
     if (event.target.value){
       this.setState({password: event.target.value, 
-        pswStrength: passwordStrength(event.target.value).value});
+      pswStrength: passwordStrength(event.target.value).value});
     }
   }
 
   onSubmitRegister = () => {
     const { name, email, password } = this.state;
-    const validation = isValid (email, password, name, true);
+    const isRegister = true;
+    const validation = isValid (email, password, name, isRegister);
     if (validation > 0) {
       srvFetch('register', 'post', {
-        name: name, email: email.toLowerCase(), password: password})
+      name: name, email: email.toLowerCase(), password: password})
       .then(response => {
         if (response === -1){
           this.setState({errorMsg: 'Email is already in use'})
         } else {
           if (response) {
             this.setState({errorMsg: ''});
-            localStorage.setItem('refreshToken', response.refreshToken);
+            localStorage.setItem('accessToken', response.accessToken);
             this.props.loadUser(response.accessToken);
             this.props.onRouteChange('signedin');
           }

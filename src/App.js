@@ -49,23 +49,23 @@ class App extends React.Component {
     this.state = initialState;
   }
 
-  loadUser = (data) => 
+  loadUser = (accessToken) => 
     fetch(`${process.env.REACT_APP_BACK_END_LOCATION}/getuser`, {
       method: 'get',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + data }
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken }
     })
     .then (response => response.json())
     .then (data => {
       if (data === "Invalid"){
         return false;
       } else {
-        this.setState({user: {
+        this.setState({ isSignedIn: true, user: {
           id: data.id,
           name:data.name,
           email: data.email,
           entries: data.entries,
           joined: data.joined
-        }, isSignedIn: true})
+        }})
       }
       return true;
     })
@@ -74,7 +74,7 @@ class App extends React.Component {
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
-    const clarifaiFace = data.outputs[0].data.regions.map( face => {
+    const faceBoxArray = data.outputs[0].data.regions.map( face => {
       const box = face.region_info.bounding_box;
       return {
         leftCol: box.left_col * width,
@@ -83,7 +83,7 @@ class App extends React.Component {
         bottomRow: height - (box.bottom_row * height)
       }
     })
-    return clarifaiFace
+    return faceBoxArray;
   }
 
   displayFaceBox = (box) => {
@@ -98,11 +98,11 @@ class App extends React.Component {
     this.setState({imageUrl: this.state.input})
     if (Validator.isURL(this.state.input)){
       this.setState({errorMsg: ''});
-      srvFetch('imageurl', 'post', {input: this.state.input, id: this.state.user.id})
+      srvFetch('imageurl', 'post', {input: this.state.input, userId: this.state.user.id})
       .then(response => {
-        if (response[0] && response !== -1) {
-          this.displayFaceBox(this.calculateFaceLocation(response[0]))
-          this.setState(Object.assign(this.state.user, { entries: response[1]}))
+        if (response.data && response !== -1) {
+          this.displayFaceBox(this.calculateFaceLocation(response.data));
+          this.setState(Object.assign(this.state.user, { entries: response.entries}));
         }
       })
       .catch(err => console.log(err));
@@ -154,16 +154,21 @@ class App extends React.Component {
   })
 
   componentDidMount() {
-    if (this.state.route === 'loading'){
-      this.loadUser(localStorage.getItem('accessToken'))
-      .then(response => {
-        if (response) {
-          this.onRouteChange('signedin')
-        } else {
-          this.onRouteChange('signin')
-        }
-      })
-    } 
+    if (localStorage.getItem('accessToken') === null){
+      this.onRouteChange('signin');
+    } else {
+      if ((this.state.route === 'loading')){
+        this.loadUser(localStorage.getItem('accessToken'))
+        .then(response => {
+          if (response) {
+            this.onRouteChange('signedin');
+          } else {
+            localStorage.removeItem('accessToken');
+            this.onRouteChange('signin');
+          }
+        })
+      } 
+    }
   }
 
   render(){
@@ -180,7 +185,8 @@ class App extends React.Component {
           return (
             <div>
               <Score name={user.name} entries={user.entries} />
-              <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} onEnterPress={this.onEnterPress}/>
+              <ImageLinkForm onInputChange={this.onInputChange} 
+              onButtonSubmit={this.onButtonSubmit} onEnterPress={this.onEnterPress}/>
               <FaceRecognition box={box} imageUrl={imageUrl} errorMsg={errorMsg}/>
             </div>
           )

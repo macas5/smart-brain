@@ -1,9 +1,8 @@
 import React from 'react'
 import './Rankings.css'
 
- const Rankings = ({rankingsList, userRank, userEntries}) => {
-  const list = rankingsList.slice(0, 10).map((entry, index) => {
-      return (
+const Rankings = ({rankingsList, userRank, userEntries}) => {
+  const list = rankingsList.slice(0, 10).map((entry, index) => 
         (entry.entries > 0) ?
           <li key={'li'+entry.id} className="ph3 tl pv2 bb flex b--light-silver">
           <span key={'spanl'+entry.id} className='w2'>{index + 1}. </span>
@@ -11,11 +10,8 @@ import './Rankings.css'
           <span key={'spanr'+entry.id}>{entry.entries}</span></li>
         :
           <li key={'li'+entry.id} className="ph3 tl pv2 bb flex b--light-silver">
-          <span key={'spanl'+entry.id} className='w2'>{index + 1}. </span>
-          <span key={'spanm'+entry.id} className='mr-auto'></span> 
-          <span key={'spanr'+entry.id}></span></li>
-      );
-  })
+          <span key={'spanl'+entry.id} className='w2'>{index + 1}. </span></li>
+  )
 
   document.title = "Rankings - Smart Brain";
 

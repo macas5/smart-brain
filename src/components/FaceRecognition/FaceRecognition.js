@@ -4,7 +4,8 @@ import './FaceRecognition.css';
 const FaceRecognition = ({imageUrl, box, errorMsg}) => {
   if (!errorMsg.length) {
     const boundingBox = box.map((element, index) => <div key={index} className='bounding-box' 
-    style={{top: element.topRow, right: element.rightCol, bottom: element.bottomRow, left: element.leftCol}}/>)
+    style={{top: element.topRow, right: element.rightCol, 
+    bottom: element.bottomRow, left: element.leftCol}}/>)
     return(
       <div className='flex justify-center ma'>
         <div className='absolute mt2'>
