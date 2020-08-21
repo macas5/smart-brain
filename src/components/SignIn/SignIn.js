@@ -24,7 +24,7 @@ class SignIn extends React.Component {
     const { signInEmail, signInPassword } = this.state;
     const validation = isValid(signInEmail, signInPassword);
     if (validation > 0){
-      srvFetch('signin', 'post', {email: signInEmail, 
+      srvFetch('signin', 'post', {email: signInEmail.toLowerCase(), 
         password: signInPassword})
       .then(response => {
         if(response && response !== -1){

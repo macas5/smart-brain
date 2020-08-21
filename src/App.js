@@ -98,16 +98,12 @@ class App extends React.Component {
     this.setState({imageUrl: this.state.input})
     if (Validator.isURL(this.state.input)){
       this.setState({errorMsg: ''});
-      srvFetch('imageurl', 'post', {input: this.state.input})
+      srvFetch('imageurl', 'post', {input: this.state.input, id: this.state.user.id})
       .then(response => {
-        if (response && response !== -1) {
-          srvFetch('image', 'put', {id: this.state.user.id})
-          .then(count => {
-            this.setState(Object.assign(this.state.user, { entries: count}))
-          })
-          .catch(console.log)
+        if (response[0] && response !== -1) {
+          this.displayFaceBox(this.calculateFaceLocation(response[0]))
+          this.setState(Object.assign(this.state.user, { entries: response[1]}))
         }
-        this.displayFaceBox(this.calculateFaceLocation(response))
       })
       .catch(err => console.log(err));
     } else {
@@ -121,10 +117,6 @@ class App extends React.Component {
 
   onRouteChange = (route) =>{
     switch (route) {
-      case 'home':
-        this.setState({route: route});
-        break;
-
       case 'signedin':
         this.setState({isSignedIn: true});
         this.setState({route: 'home'});
@@ -135,22 +127,15 @@ class App extends React.Component {
         this.setState({route: route});
         break;
 
-      case 'register':
-        this.setState({route: route});
-        break;
-
-      case 'loading':
-        this.setState({route: route});
-        break;
-
-      case 'signin':
-        this.setState({route: route});
+      case 'signout':
+        localStorage.removeItem('accessToken');
+        this.setState(initialState);
+        this.setState({route: 'signin'});
         break;
       
       default:
-        localStorage.removeItem('accessToken');
-        this.setState({route: 'signin'});
-        this.setState(initialState);
+        this.setState({route: route});
+        break;
     }
   }
 
@@ -168,16 +153,27 @@ class App extends React.Component {
     this.setState({rankingsList: response.map(x => x)}) ;
   })
 
+  componentDidMount() {
+    if (this.state.route === 'loading'){
+      this.loadUser(localStorage.getItem('accessToken'))
+      .then(response => {
+        if (response) {
+          this.onRouteChange('signedin')
+        } else {
+          this.onRouteChange('signin')
+        }
+      })
+    } 
+  }
+
   render(){
     const {isSignedIn} = this.state;
-
     const routeSelection = () => {
       const {imageUrl, route, box, rankingsList, user, errorMsg} = this.state;
       switch (route){
         case 'signin':
           return (
-          <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}
-           isSignedIn={this.isSignedIn} />
+          <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
           )
   
         case 'home':
@@ -207,36 +203,18 @@ class App extends React.Component {
           return <p>There were some problems getting route</p>
       }
     }
-
     
-    const app = (
-    <div className="App">
-      <Particles className='particles' params={particlesOptions} />
-      <div className='flex flex-wrap justify-end flex-row-reverse'>
-        {(this.state.route !== "loading") && 
-        <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>}
-        <Logo />
+    return (
+      <div className="App">
+        <Particles className='particles' params={particlesOptions} />
+        <div className='flex flex-wrap justify-end flex-row-reverse'>
+          {(this.state.route !== "loading") && 
+          <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>}
+          <Logo />
+        </div>
+        {routeSelection()}
       </div>
-      {routeSelection()}
-    </div>
-    )
-
-    const init = () => {
-      if (this.state.route === 'loading'){
-        this.loadUser(localStorage.getItem('accessToken'))
-        .then(response => {
-          if (response) {
-            this.onRouteChange('signedin')
-            return app;
-          } else {
-            this.onRouteChange('signin')
-            return app; 
-          }
-        })
-      } 
-      return app;
-    }
-    return (init());
+    );
   }
 }
 

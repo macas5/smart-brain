@@ -35,7 +35,7 @@ class Register extends React.Component {
     const validation = isValid (email, password, name, true);
     if (validation > 0) {
       srvFetch('register', 'post', {
-        name: name, email: email, password: password})
+        name: name, email: email.toLowerCase(), password: password})
       .then(response => {
         if (response === -1){
           this.setState({errorMsg: 'Email is already in use'})
