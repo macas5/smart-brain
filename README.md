@@ -1,6 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-##API of this project at: https://github.com/macas5/smart-brain-api
+# API of this project at: 
+# https://github.com/macas5/smart-brain-api
 
 ## Smart Brain
 
